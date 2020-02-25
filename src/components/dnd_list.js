@@ -34,6 +34,8 @@ export class DnDList extends HTMLElement {
     this.hoveredItem = null;
 
     this.dropSuccessful = false;
+
+    this.clientCoordinates = {x: 0, y: 0};
   }
 
   connectedCallback() {
@@ -96,9 +98,18 @@ export class DnDList extends HTMLElement {
         this.dragEndHandler(e));
   }
 
+  // Workaround for ancient firefox bug
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=505521
+  saveCoordinates(e) {
+    this.clientCoordinates.x = e.clientX;
+    this.clientCoordinates.y = e.clientY;
+  }
+
   dragStartHandler(e) {
     const item = e.composedPath().find((item) => item instanceof DnDListItem);
     if (item) {
+      document.addEventListener('dragover', (e) =>
+          this.saveCoordinates(e));
       this.draggedItem = item;
       window.requestAnimationFrame(() => {
         this.draggedItem.style.visibility = 'hidden';
@@ -171,8 +182,8 @@ export class DnDList extends HTMLElement {
     }
 
     const hoveredItemRect = this.hoveredItem.getBoundingClientRect();
-    const shouldReoder = hoveredItemRect.top < e.clientY &&
-        hoveredItemRect.bottom > e.clientY && !this.hoveredItem.ignoreWhileReordering;
+    const shouldReoder = hoveredItemRect.top < this.clientCoordinates.y &&
+        hoveredItemRect.bottom > this.clientCoordinates.y && !this.hoveredItem.ignoreWhileReordering;
 
     if (shouldReoder) {
       this.reorderItems();
@@ -207,6 +218,11 @@ export class DnDList extends HTMLElement {
     if (this.hoveredItem) {
       this.hoveredItem = null;
     }
+
+    document.removeEventListener('dragover', (e) =>
+        this.saveCoordinates(e));
+    this.clientCoordinates.x = 0;
+    this.clientCoordinates.y = 0;
   }
 }
 

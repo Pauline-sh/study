@@ -25,7 +25,7 @@ const getPlugins = (options) => [
     }),
     serve({
       open: true,
-      contentBase: ['dist', '../static']
+      contentBase: ['dist']
     }),
 ];
 
