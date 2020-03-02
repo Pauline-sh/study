@@ -2,5 +2,7 @@
 2)[ ] service worker
   2.1)[ ] caching
   2.2)[ ] pushes
-3)[ ] more redux
-4)[ ] grab cursor on dragging
+3)[ ] use redux
+
+4)[ ] grab cursor on dragging - тут возможно придется переделывать днд, чтобы драгать не гост а именно айтем
+5)[ ] поддержка сафари - перейти с js анимаций на css

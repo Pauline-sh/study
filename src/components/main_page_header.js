@@ -2,6 +2,7 @@ const template = document.createElement('template');
 template.innerHTML = `
 <style>
   :host {
+    width: 100vw;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -12,6 +13,32 @@ template.innerHTML = `
   :host h1 {
     color: var(--color-light);
     font-family: var(--text-font);
+  }
+
+  :host h1:hover {
+    animation: scale-up 1s cubic-bezier(.2, 1, .2, 1) forwards;
+  }
+
+  .animated-scale-down {
+    animation: scale-down 1s cubic-bezier(.2, 1, .2, 1) forwards;
+  }
+
+  @keyframes scale-up {
+    0% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(1.5);
+    }
+  }
+
+  @keyframes scale-down {
+    0% {
+      transform: scale(1.5);
+    }
+    100% {
+      transform: scale(1);
+    }
   }
 </style>
 
@@ -35,19 +62,12 @@ export class MainPageHeader extends HTMLElement {
   connectedCallback() {
     this.header.addEventListener('pointerenter', (e) =>
         this.handleHeaderPointerEnter(e));
-    this.header.addEventListener('pointerleave', (e) =>
-        this.handleHeaderPointerLeave(e));
     this.render();
   }
 
   disconnectedCallback() {
     this.header.removeEventListener('pointerenter', (e) =>
         this.handleHeaderPointerEnter(e));
-    this.header.removeEventListener('pointerleave', (e) =>
-        this.handleHeaderPointerLeave(e));
-
-    this.curAnimation.cancel();
-    this.curAnimation = null;
   }
 
   static get observedAttributes() {
@@ -70,37 +90,12 @@ export class MainPageHeader extends HTMLElement {
     this.header.innerHTML = this.text;
   }
 
-  createHeaderAnimation() {
-    const keyframes = [
-      {transform: 'scale(1)', color: 'var(--color-light)'},
-      {transform: 'scale(2)', color: 'var(--color-light-blue)'},
-    ];
-    const options = {
-      duration: 600,
-      fill: "forwards",
-      easing: "cubic-bezier(.2, 1, .2, 1)",
-      iterations: 1
-    };
-    return this.header.animate(keyframes, options);
-  }
-
   handleHeaderPointerEnter() {
-    if (!this.curAnimation) {
-      this.curAnimation = this.createHeaderAnimation();
-      return;
+    if (!this.header.classList.contains('animated-scale-down')) {
+      this.header.classList.add('animated-scale-down');
+      this.header.removeEventListener('pointerenter', (e) =>
+          this.handleHeaderPointerEnter(e));
     }
-
-    this.curAnimation.play();
-    this.curAnimation.reverse();
-  }
-
-  handleHeaderPointerLeave() {
-    if (!this.curAnimation) {
-      return;
-    }
-
-    this.curAnimation.play();
-    this.curAnimation.reverse();
   }
 };
 

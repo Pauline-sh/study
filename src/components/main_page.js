@@ -4,6 +4,11 @@ import './dnd_list';
 const template = document.createElement('template');
 template.innerHTML = `
 <style>
+  :host {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
 </style>
 
 <main-page-header></main-page-header>
