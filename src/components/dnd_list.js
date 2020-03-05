@@ -15,6 +15,19 @@ template.innerHTML = `
   background-color: var(--color-light-blue);
   border-radius: 4px;
 }
+
+.reordering {
+  animation: reorder 0.2s ease-out;
+}
+
+@keyframes reorder {
+  0% {
+    transform: translateY(var(--item-reorder-distance));
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
 </style>`;
 
 export class DnDList extends HTMLElement {
@@ -129,20 +142,13 @@ export class DnDList extends HTMLElement {
   async animateReordering(initialHoveredItemBcr, finalHoveredItemBcr) {
     const animatedItem = this.hoveredItem;
     const distance = initialHoveredItemBcr.top - finalHoveredItemBcr.top;
+    this.style.setProperty('--item-reorder-distance', `${distance}px`);
     const duration = 200;
-    const keyframes = [
-      {transform: `translateY(${distance}px)`},
-      {transform: `translateY(${0}px)`},
-    ];
-    const options = {
-      duration,
-      iterations: 1,
-      easing: 'ease-out',
-    };
-    animatedItem.animate(keyframes, options);
+    animatedItem.classList.add('reordering');
     await new Promise((resolve) => {
       setTimeout(() => {
         animatedItem.ignoreWhileReordering = false;
+        animatedItem.classList.remove('reordering');
         resolve();
       }, duration);
     });
