@@ -6,12 +6,13 @@ import nodeResolve from 'rollup-plugin-node-resolve';
 import postcss from 'rollup-plugin-postcss';
 import replace from 'rollup-plugin-replace';
 import serve from 'rollup-plugin-serve';
+import typeScript from 'rollup-plugin-typescript2';
 
 const getPlugins = (options) => [
     nodeResolve(),
     commonjs(),
     babel({
-      exclude: 'node_modules/**' // only transpile our source code
+      exclude: 'node_modules/**'
     }),
     html(),
     livereload({
@@ -27,16 +28,20 @@ const getPlugins = (options) => [
       open: true,
       contentBase: ['dist']
     }),
+    typeScript({
+        tsconfig: 'tsconfig.json',
+        tsconfigOverride: { compilerOptions: { 'target': options.target } }
+    }),
 ];
 
 export default {
-    input: './src/index.js',
+    input: './src/index.ts',
     output: {
         file: './dist/index.min.js',
         format: 'iife',
         name: 'bundle'
     },
     plugins: getPlugins({
-      target: 'es3',
+      target: 'es6',
     })
 }
