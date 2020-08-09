@@ -75,7 +75,7 @@ export class TodoList extends HTMLElement {
     return ['disabled'];
   }
 
-  private attributeChangedCallback() {
+  attributeChangedCallback() {
     this.render();
   }
 }

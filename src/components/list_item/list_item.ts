@@ -31,6 +31,10 @@ export class ListItem extends HTMLElement {
     this.render();
   }
 
+  static get observedAttributes() {
+    return ['text'];
+  }
+
   attributeChangedCallback() {
     this.render();
   }
@@ -40,16 +44,15 @@ export class ListItem extends HTMLElement {
   }
 
   async animateReordering(direction: direction): Promise<void> {
-    const initialHoveredItemBcr: BoundingClientRect =
-        getBoundingClientRectObj(this);
-    const distance = initialHoveredItemBcr.height + ITEMS_GAP + this.currentOffset;
-    const destination =  direction === 'TOP' ? -distance : distance;
+    const itemBcr: BoundingClientRect = getBoundingClientRectObj(this);
+    const destination = this.currentOffset === 0 ? itemBcr.height + ITEMS_GAP : 0;
+    const distance =  direction === 'TOP' ? -destination : destination;
 
     this.currentOffset === 0 ?
-        this.style.setProperty('--item-reorder-distance', `${-destination}px`) :
+        this.style.setProperty('--item-reorder-distance', `${-distance}px`) :
         this.style.setProperty('--item-reorder-distance', `${this.currentOffset}px`);
-    this.currentOffset = destination;
-    this.style.translate = `0px ${destination}px`;
+    this.currentOffset = distance;
+    this.style.translate = `0px ${distance}px`;
     this.classList.add('reordering');
 
     return new Promise((resolve) => {
